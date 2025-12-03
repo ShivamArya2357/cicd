@@ -12,6 +12,6 @@ public class CICDController {
 
     @GetMapping("/greeting")
     public ResponseEntity<String> greeting() {
-        return new ResponseEntity<>("Hello World", HttpStatus.OK);
+        return new ResponseEntity<>("Pello World", HttpStatus.OK);
     }
 }
