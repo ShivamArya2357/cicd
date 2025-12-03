@@ -20,7 +20,7 @@ jobs:
           path: artifact/
 
       - name: Copy JAR to EC2 server
-        uses: actions/scp-action@v0.1.7
+        uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER  }}
