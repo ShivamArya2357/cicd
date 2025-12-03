@@ -1,0 +1,38 @@
+name: Deploy to AWS EC2
+
+on:
+  workflow_run:
+    workflows: ["ci.yml"]
+    types:
+      - completed
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+
+    steps:
+      - name: Download JAR artifact from the CI pipeline
+        uses: actions/download-artifact@v4
+        with:
+          name: cicd
+          path: artifact/
+
+      - name: Copy JAR to EC2 server
+        uses: actions/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER  }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          source: "artifact/*.jar"
+          target: "/home/ec2-user/app"
+
+      - name: Restart Spring Boot application on EC2
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            sudo systemctl restart cicd
